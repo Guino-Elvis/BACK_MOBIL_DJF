@@ -7,7 +7,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Guino-Elvis/APP_C6_FLUTTER.git
+          uri: https://github.com/Guino-Elvis/BACK_MOBIL_DJF.git
           search-paths: config-data
           default-label: main
   security:
