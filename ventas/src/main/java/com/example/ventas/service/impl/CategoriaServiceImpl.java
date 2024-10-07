@@ -1,4 +1,7 @@
+package com.example.ventas.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,11 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Autowired
     private CategoriaRepository categoriaRepository;
+
+    @Override
+    public List<Categoria> buscar(String nombre, LocalDateTime created_at, LocalDateTime updated_at, String estado) {
+        return categoriaRepository.findByBusqueda(nombre, created_at, updated_at, estado);
+    }
 
     @Override
     public List<Categoria> listar() {

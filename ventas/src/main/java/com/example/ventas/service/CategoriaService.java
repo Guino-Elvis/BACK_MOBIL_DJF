@@ -1,5 +1,6 @@
 package com.example.ventas.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,4 +17,6 @@ public interface CategoriaService {
     public Optional<Categoria> listarPorId(Integer id);
 
     public void eliminarPorId(Integer id);
+
+    List<Categoria> buscar(String nombre, LocalDateTime created_at, LocalDateTime updated_at, String estado);
 }

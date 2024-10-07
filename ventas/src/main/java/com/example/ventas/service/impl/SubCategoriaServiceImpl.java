@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
 import com.example.ventas.entity.Categoria;
 import com.example.ventas.entity.SubCategoria;
 import com.example.ventas.repository.SubCategoriaRepository;
 import com.example.ventas.service.SubCategoriaService;
-import io.swagger.v3.oas.annotations.servers.Server;
 
-@Server
+@Service
 public class SubCategoriaServiceImpl implements SubCategoriaService {
 
     @Autowired

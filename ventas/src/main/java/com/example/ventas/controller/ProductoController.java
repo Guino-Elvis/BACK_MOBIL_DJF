@@ -1,8 +1,5 @@
 package com.example.ventas.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.ventas.entity.Producto;
 
 import com.example.ventas.service.ProductoService;
@@ -17,6 +14,12 @@ import org.springframework.http.ResponseEntity;
 public class ProductoController {
     @Autowired
     private ProductoService productoService;
+
+    @GetMapping("/productoPorSubCategoria/{idSubCategoria}")
+    public ResponseEntity<List<Producto>> listarProductosPorSubCategoria(@PathVariable Integer idSubCategoria) {
+        List<Producto> productos = productoService.listarPorSubCategoria(idSubCategoria);
+        return ResponseEntity.ok(productos);
+    }
 
     @GetMapping()
     public ResponseEntity<List<Producto>> list() {

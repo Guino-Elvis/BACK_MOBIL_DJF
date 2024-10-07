@@ -1,11 +1,10 @@
 package com.example.ventas.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.example.ventas.entity.Categoria;
 import com.example.ventas.service.CategoriaService;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,17 @@ public class CategoriaController {
     @GetMapping()
     public ResponseEntity<List<Categoria>> list() {
         return ResponseEntity.ok().body(categoriaService.listar());
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Categoria>> buscar(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) LocalDateTime created_at,
+            @RequestParam(required = false) LocalDateTime updated_at,
+            @RequestParam(required = false) String estado) {
+
+        List<Categoria> categorias = categoriaService.buscar(nombre, created_at, updated_at, estado);
+        return ResponseEntity.ok().body(categorias);
     }
 
     @PostMapping()
