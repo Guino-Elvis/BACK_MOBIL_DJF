@@ -25,11 +25,11 @@ public class Producto {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private SubCategoria subCategoria;
     private String estado;
-    private LocalDateTime created_at = LocalDateTime.now();
-    private LocalDateTime updated_at = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PreUpdate
     private void preUpdate() {
-        updated_at = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 }

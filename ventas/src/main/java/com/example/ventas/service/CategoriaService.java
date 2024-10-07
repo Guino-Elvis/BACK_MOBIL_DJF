@@ -18,5 +18,6 @@ public interface CategoriaService {
 
     public void eliminarPorId(Integer id);
 
-    List<Categoria> buscar(String nombre, LocalDateTime created_at, LocalDateTime updated_at, String estado);
+    List<Categoria> buscar(String nombre, LocalDateTime createdAt, LocalDateTime updatedAt, String estado);
+
 }

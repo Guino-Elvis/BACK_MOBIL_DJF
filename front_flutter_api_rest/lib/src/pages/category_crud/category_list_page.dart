@@ -18,16 +18,18 @@ class _CategorylistPageState extends State<CategorylistPage> {
 
   List<CategoriaModel> item = [];
   CategoryController categoryController = CategoryController();
+  TextEditingController searchController = TextEditingController(); // Controlador para el buscador
 
   @override
   void initState() {
     super.initState();
-    _getData();
+    _getData(); // Inicialmente, cargamos todos los datos
   }
 
-  Future<void> _getData() async {
+  // Método para obtener los datos (incluyendo búsqueda si hay un término)
+  Future<void> _getData({String? nombre}) async {
     try {
-      final categoriesData = await categoryController.getDataCategories();
+      final categoriesData = await categoryController.getDataCategories(nombre: nombre); // Buscar si hay un nombre, o cargar todo
       setState(() {
         item = categoriesData
             .map<CategoriaModel>((json) => CategoriaModel.fromJson(json))
@@ -36,6 +38,11 @@ class _CategorylistPageState extends State<CategorylistPage> {
     } catch (error) {
       print('Error fetching categories: $error');
     }
+  }
+
+  // Método para manejar los cambios en el buscador
+  void _onSearch(String searchQuery) {
+    _getData(nombre: searchQuery); // Llamar a _getData con el parámetro de búsqueda
   }
 
   Future<void> _removeCategory(int id, String fotoURL) async {
@@ -47,11 +54,8 @@ class _CategorylistPageState extends State<CategorylistPage> {
       );
       _getData();
     } else if (response.statusCode == 500) {
-      // Mensaje específico para el error 500
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Error al eliminar la categoría: tiene elementos relacionados.')),
+        SnackBar(content: Text('Error al eliminar la categoría: tiene elementos relacionados.')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,8 +70,8 @@ class _CategorylistPageState extends State<CategorylistPage> {
       builder: (BuildContext context) {
         return ConfirmDeleteDialog(
           id: id,
-          fotoURL: fotoURL, // Asegúrate de pasar la URL aquí
-          onConfirmDelete: _removeCategory, // Esto ahora está correcto
+          fotoURL: fotoURL, 
+          onConfirmDelete: _removeCategory, 
         );
       },
     );
@@ -84,6 +88,36 @@ class _CategorylistPageState extends State<CategorylistPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Campo de búsqueda
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: searchController,
+                onChanged: (value) {
+                  _onSearch(value); // Llamar a _onSearch en cada cambio de texto
+                },
+                decoration: InputDecoration(
+                  labelText: 'Buscar categoría', // Texto del buscador
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      _onSearch(searchController.text); // Llamar a _onSearch cuando se presiona el botón de búsqueda
+                    },
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryCreatePage(),
+                  ),
+                );
+              },
+              child: Text('CREAR '),
+            ),
             Column(
               children: item.map<Widget>((category) {
                 return Column(
@@ -100,26 +134,19 @@ class _CategorylistPageState extends State<CategorylistPage> {
                             children: [
                               Stack(
                                 children: [
-                                  // Usar CachedNetworkImage para cargar la imagen de la categoría
                                   CachedNetworkImage(
-                                    imageUrl:
-                                        category.foto ?? '', // URL de la foto
+                                    imageUrl: category.foto ?? '', // URL de la foto
                                     imageBuilder: (context, imageProvider) =>
                                         CircleAvatar(
                                       backgroundImage: imageProvider,
-                                      radius:
-                                          50, // Ajusta el tamaño según sea necesario
+                                      radius: 50, // Ajusta el tamaño
                                     ),
                                     placeholder: (context, url) => CircleAvatar(
-                                      backgroundImage:
-                                          AssetImage('assets/nofoto.jpg'),
-                                      radius:
-                                          50, // Tamaño del avatar por defecto
+                                      backgroundImage: AssetImage('assets/nofoto.jpg'),
+                                      radius: 50, 
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        CircleAvatar(
-                                      backgroundImage: AssetImage(
-                                          'assets/nofoto.jpg'), // Imagen por defecto en caso de error
+                                    errorWidget: (context, url, error) => CircleAvatar(
+                                      backgroundImage: AssetImage('assets/nofoto.jpg'),
                                       radius: 50,
                                     ),
                                   ),
@@ -139,8 +166,7 @@ class _CategorylistPageState extends State<CategorylistPage> {
                                 child: Text('Editar '),
                               ),
                               ElevatedButton(
-                                onPressed: () => _showDeleteDialog(
-                                    category.id!, category.foto!),
+                                onPressed: () => _showDeleteDialog(category.id!, category.foto!),
                                 child: Text('Eliminar '),
                               ),
                             ],

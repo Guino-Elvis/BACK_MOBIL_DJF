@@ -24,11 +24,11 @@ public class CategoriaController {
     @GetMapping("/buscar")
     public ResponseEntity<List<Categoria>> buscar(
             @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) LocalDateTime created_at,
-            @RequestParam(required = false) LocalDateTime updated_at,
+            @RequestParam(required = false) LocalDateTime createdAt,
+            @RequestParam(required = false) LocalDateTime updatedAt,
             @RequestParam(required = false) String estado) {
 
-        List<Categoria> categorias = categoriaService.buscar(nombre, created_at, updated_at, estado);
+        List<Categoria> categorias = categoriaService.buscar(nombre, createdAt, updatedAt, estado);
         return ResponseEntity.ok().body(categorias);
     }
 

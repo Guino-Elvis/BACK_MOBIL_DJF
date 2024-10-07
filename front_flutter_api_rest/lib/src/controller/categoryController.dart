@@ -10,6 +10,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart';
+
 class CategoryController {
   static const _scopes = [SheetsApi.spreadsheetsScope];
   final _sheetName = 'Sheet1';
@@ -32,7 +33,6 @@ class CategoryController {
       'ID',
       'Nombre',
       'tag',
-      'Cuerpo',
       'estado',
       'Imagen'
     ]; // Nombres de las columnas
@@ -152,98 +152,112 @@ class CategoryController {
     }
   }
 
-  Future<List<dynamic>> getDataCategories() async {
-    try {
-      final urls = Providers.provider();
-      final urlString = urls['categoryListProvider']!;
-      final url = Uri.parse(urlString);
+  Future<List<dynamic>> getDataCategories({String? nombre}) async {
+  try {
+    final urls = Providers.provider();
+    String urlString = urls['categoryListProvider']!;
 
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        //await listarCat();
-        return json.decode(response.body);
-      } else {
-        throw Exception('Failed to load categories');
-      }
-    } catch (e) {
-      print('Error: $e');
-      return [];
+    // Si el nombre es proporcionado, lo agregamos como parámetro de búsqueda
+    if (nombre != null && nombre.isNotEmpty) {
+      urlString += '/buscar?nombre=$nombre';
     }
+
+    final url = Uri.parse(urlString);
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  } catch (e) {
+    print('Error: $e');
+    return [];
   }
- Future<http.Response> crearCategoria(CategoriaModel nuevaCategoria) async {
-  // Obtener la URL del proveedor
-  final urls = Providers.provider();
-  final urlString = urls['categoryListProvider']!;
-  final url = Uri.parse(urlString);
+}
 
-  // Crear el cuerpo de la solicitud
-  final body = jsonEncode(nuevaCategoria.toJson());
+  Future<http.Response> crearCategoria(CategoriaModel nuevaCategoria) async {
+    // Obtener la URL del proveedor
+    final urls = Providers.provider();
+    final urlString = urls['categoryListProvider']!;
+    final url = Uri.parse(urlString);
 
-  // Enviar la solicitud POST
-  final response = await http.post(
-    url,
-    headers: {
-      'Content-Type': 'application/json', // Especificar que el contenido es JSON
-    },
-    body: body,
-  );
+    // Crear el cuerpo de la solicitud
+    final body = jsonEncode(nuevaCategoria.toJson());
 
-  // Manejar la respuesta
-  if (response.statusCode == 200 || response.statusCode == 201) {
-    // La categoría se creó con éxito
-    print('Categoría creada: ${response.body}');
-    
+    // Enviar la solicitud POST
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type':
+            'application/json', // Especificar que el contenido es JSON
+      },
+      body: body,
+    );
+
+    // Manejar la respuesta
     if (response.statusCode == 200 || response.statusCode == 201) {
-      await _addRow([
-        nuevaCategoria.nombre.toString(),
-        nuevaCategoria.tag.toString(),
-        nuevaCategoria.estado.toString(),
-        nuevaCategoria.foto.toString()
-      ]);
+      // La categoría se creó con éxito
+      print('Categoría creada: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await _addRow([
+          nuevaCategoria.nombre.toString(),
+          nuevaCategoria.tag.toString(),
+          nuevaCategoria.estado.toString(),
+          nuevaCategoria.foto.toString()
+        ]);
+      }
+    } else {
+      // Ocurrió un error
+      print(
+          'Error al crear categoría: ${response.statusCode} - ${response.body}');
     }
-  } else {
-    // Ocurrió un error
-    print('Error al crear categoría: ${response.statusCode} - ${response.body}');
+
+    return response; // Retornar la respuesta
   }
 
-  return response; // Retornar la respuesta
-}
+  Future<http.Response> editarCategoria(CategoriaModel categoriaEditada) async {
+    // Obtener la URL del proveedor
+    final urls = Providers.provider();
+    final urlString = urls['categoryListProvider']!;
+    final url =
+        Uri.parse(urlString); // URL sin ID, ya que se enviará en el cuerpo
+
+    // Crear el cuerpo de la solicitud, incluyendo el ID
+    final body = jsonEncode(categoriaEditada.toJson());
+
+    // Enviar la solicitud PUT
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type':
+            'application/json', // Especificar que el contenido es JSON
+      },
+      body: body,
+    );
+
+     // Manejar la respuesta
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      // La categoría se actualizó con éxito
+      print('Categoría editada: ${response.body}');
+
+      await _updateRow(categoriaEditada.id!, [ 
+        categoriaEditada.nombre ?? '',
+        categoriaEditada.tag ?? '',
+        categoriaEditada.estado ?? '',
+        categoriaEditada.foto ?? ''
+      ]);
+    } else {
+ 
+      print('Error al editar categoría: ${response.statusCode} - ${response.body}');
+    }
 
 
- Future<http.Response> editarCategoria(CategoriaModel categoriaEditada) async {
-  // Obtener la URL del proveedor
-  final urls = Providers.provider();
-  final urlString = urls['categoryListProvider']!;
-  final url = Uri.parse(urlString); // URL sin ID, ya que se enviará en el cuerpo
-
-  // Crear el cuerpo de la solicitud, incluyendo el ID
-  final body = jsonEncode(categoriaEditada.toJson());
-
-  // Enviar la solicitud PUT
-  final response = await http.put(
-    url,
-    headers: {
-      'Content-Type': 'application/json', // Especificar que el contenido es JSON
-    },
-    body: body,
-  );
-
-  // Manejar la respuesta
-  if (response.statusCode == 200) {
-    // La categoría se actualizó con éxito
-    print('Categoría editada: ${response.body}');
-    
-  } else {
-    // Ocurrió un error
-    print('Error al editar categoría: ${response.statusCode} - ${response.body}');
+    return response; // Retornar la respuesta
   }
 
-  return response; // Retornar la respuesta
-}
-
-
-  Future<http.Response> removeCategoria(int id , String fotoURL) async {
+  Future<http.Response> removeCategoria(int id, String fotoURL) async {
     final urls = Providers.provider();
     final urlString = urls['categoryListProvider']!;
     final url = Uri.parse('$urlString/$id');
@@ -252,20 +266,21 @@ class CategoryController {
       url,
       headers: {"Content-Type": "application/json"},
     );
-        // Verifica si la fotoURL es una URL válida de Firebase Storage
-    if (fotoURL.isNotEmpty && (fotoURL.startsWith('gs://') || fotoURL.startsWith('https://'))) {
-        // Elimina la foto de Firebase Storage
-        try {
-            await FirebaseStorage.instance.refFromURL(fotoURL).delete();
-            print("Imagen eliminada de Firebase Storage");
-        } catch (e) {
-            print("Error al eliminar la imagen: $e");
-        }
+    // Verifica si la fotoURL es una URL válida de Firebase Storage
+    if (fotoURL.isNotEmpty &&
+        (fotoURL.startsWith('gs://') || fotoURL.startsWith('https://'))) {
+      // Elimina la foto de Firebase Storage
+      try {
+        await FirebaseStorage.instance.refFromURL(fotoURL).delete();
+        print("Imagen eliminada de Firebase Storage");
+      } catch (e) {
+        print("Error al eliminar la imagen: $e");
+      }
     }
 
     print("Status Code: ${response.statusCode}");
     print("Response Body: ${response.body}");
-   
+
     if (response.statusCode == 200 || response.statusCode == 204) {
       await _deleteRow(id);
     }

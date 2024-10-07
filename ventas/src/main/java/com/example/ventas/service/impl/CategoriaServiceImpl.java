@@ -18,8 +18,8 @@ public class CategoriaServiceImpl implements CategoriaService {
     private CategoriaRepository categoriaRepository;
 
     @Override
-    public List<Categoria> buscar(String nombre, LocalDateTime created_at, LocalDateTime updated_at, String estado) {
-        return categoriaRepository.findByBusqueda(nombre, created_at, updated_at, estado);
+    public List<Categoria> buscar(String nombre, LocalDateTime createdAt, LocalDateTime updatedAt, String estado) {
+        return categoriaRepository.buscarPorParametros(nombre, createdAt, updatedAt, estado);
     }
 
     @Override
