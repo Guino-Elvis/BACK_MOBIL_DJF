@@ -7,6 +7,7 @@ import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
 import 'package:front_flutter_api_rest/src/routes/route.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CategoryEditPage extends StatefulWidget {
@@ -104,59 +105,170 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
             'Editar Categoría: ${widget.item.nombre ?? 'Sin Nombre'}'), // Muestra 'Sin Nombre' si el nombre es nulo
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              CachedNetworkImage(
-                imageUrl: widget.item.foto.toString(),
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) =>
-                    Image.asset('assets/nofoto.jpg'),
-                fit: BoxFit.cover,
-              ),
-              TextField(
-                controller: _nombreController,
-                decoration: InputDecoration(labelText: 'Nombre'),
-              ),
-              TextField(
-                controller: _tagController,
-                decoration: InputDecoration(labelText: 'Tag'),
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedEstado,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    selectedEstado = newValue;
-                  });
-                },
-                items: estados.map((String estado) {
-                  return DropdownMenuItem<String>(
-                    value: estado,
-                    child: Text(estado),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Formato',
-                  hintText: 'Selecciona un estado para este item',
-                  icon: Icon(Icons.category_outlined),
+          child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Contenedor para mostrar la imagen con un estilo mejorado
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15.0),
+                child: CachedNetworkImage(
+                  imageUrl: widget.item.foto.toString(),
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) =>
+                      Image.asset('assets/nofoto.jpg'),
+                  fit: BoxFit.cover,
+                  height: 200,
+                  width: 200,
                 ),
               ),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Seleccionar Imagen'),
+            ),
+            SizedBox(height: 20), // Espaciado entre imagen y formulario
+            Card(
+              color: Colors.white,
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
               ),
-              if (selectedImage != null)
-                Image.file(selectedImage!), // Muestra la imagen seleccionada
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _editarCategoria,
-                child: Text('Actualizar Categoría'),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Campo de texto para el nombre
+                      TextFormField(
+                        controller: _nombreController,
+                        decoration: InputDecoration(
+                          labelText: 'Nombre',
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20), // Espaciado entre campos
+                      // Campo de texto para el tag
+                      TextFormField(
+                        controller: _tagController,
+                        decoration: InputDecoration(
+                          labelText: 'Tag',
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      // Dropdown de Estado
+                      DropdownButtonFormField<String>(
+                        value: selectedEstado,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedEstado = newValue;
+                          });
+                        },
+                        items: estados.map((String estado) {
+                          return DropdownMenuItem<String>(
+                            value: estado,
+                            child: Text(estado),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Estado',
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      // Botón para seleccionar una imagen
+                      ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: Icon(Icons.image),
+                        label: Text('Seleccionar Imagen'),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.blueAccent,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      if (selectedImage != null)
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              selectedImage!,
+                              height: 150,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      SizedBox(height: 30),
+                      // Botón para actualizar la categoría
+                      ElevatedButton(
+                        onPressed: _editarCategoria,
+                        child: Text(
+                          'Actualizar Categoría',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      )),
     );
   }
 }

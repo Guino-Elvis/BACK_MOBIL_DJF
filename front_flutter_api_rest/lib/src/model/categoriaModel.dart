@@ -5,7 +5,7 @@ class CategoriaModel {
   String? body;
   String? estado;
   String? foto;
-
+  String? createdAt;
   // Constructor
   CategoriaModel(
     {
@@ -14,6 +14,7 @@ class CategoriaModel {
     this.tag,
     this.estado,
     this.foto,
+    this.createdAt,
   });
 
   // Factory constructor para crear una instancia desde un JSON
@@ -24,6 +25,7 @@ class CategoriaModel {
       tag: json['tag'] as String?,
       estado: json['estado'] as String?,
       foto: json['foto'] as String?,
+      createdAt: json['createdAt'] as String?,
     );
   }
 
@@ -35,6 +37,7 @@ class CategoriaModel {
       'tag': tag,
       'estado': estado,
       'foto': foto,
+      //'createdAt': createdAt,
     };
   }
 }

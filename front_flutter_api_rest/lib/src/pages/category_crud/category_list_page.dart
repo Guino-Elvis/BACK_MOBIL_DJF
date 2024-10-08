@@ -1,12 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:front_flutter_api_rest/src/components/app_bar.dart';
 import 'package:front_flutter_api_rest/src/components/delete_item.dart';
 import 'package:front_flutter_api_rest/src/components/drawers.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/pages/category_crud/category_create_page.dart';
 import 'package:front_flutter_api_rest/src/pages/category_crud/category_edit_page.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
-import 'package:front_flutter_api_rest/src/services/api.dart';
+import 'package:front_flutter_api_rest/src/providers/provider.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:path/path.dart'
+    as path; // Cambia el nombre a 'path' o el que prefieras
 
 class CategorylistPage extends StatefulWidget {
   @override
@@ -18,7 +26,8 @@ class _CategorylistPageState extends State<CategorylistPage> {
 
   List<CategoriaModel> item = [];
   CategoryController categoryController = CategoryController();
-  TextEditingController searchController = TextEditingController(); // Controlador para el buscador
+  TextEditingController searchController =
+      TextEditingController(); // Controlador para el buscador
 
   @override
   void initState() {
@@ -26,10 +35,10 @@ class _CategorylistPageState extends State<CategorylistPage> {
     _getData(); // Inicialmente, cargamos todos los datos
   }
 
-  // Método para obtener los datos (incluyendo búsqueda si hay un término)
   Future<void> _getData({String? nombre}) async {
     try {
-      final categoriesData = await categoryController.getDataCategories(nombre: nombre); // Buscar si hay un nombre, o cargar todo
+      final categoriesData =
+          await categoryController.getDataCategories(nombre: nombre);
       setState(() {
         item = categoriesData
             .map<CategoriaModel>((json) => CategoriaModel.fromJson(json))
@@ -40,9 +49,8 @@ class _CategorylistPageState extends State<CategorylistPage> {
     }
   }
 
-  // Método para manejar los cambios en el buscador
   void _onSearch(String searchQuery) {
-    _getData(nombre: searchQuery); // Llamar a _getData con el parámetro de búsqueda
+    _getData(nombre: searchQuery);
   }
 
   Future<void> _removeCategory(int id, String fotoURL) async {
@@ -55,7 +63,9 @@ class _CategorylistPageState extends State<CategorylistPage> {
       _getData();
     } else if (response.statusCode == 500) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al eliminar la categoría: tiene elementos relacionados.')),
+        SnackBar(
+            content: Text(
+                'Error al eliminar la categoría: tiene elementos relacionados.')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -70,8 +80,8 @@ class _CategorylistPageState extends State<CategorylistPage> {
       builder: (BuildContext context) {
         return ConfirmDeleteDialog(
           id: id,
-          fotoURL: fotoURL, 
-          onConfirmDelete: _removeCategory, 
+          fotoURL: fotoURL,
+          onConfirmDelete: _removeCategory,
         );
       },
     );
@@ -80,102 +90,274 @@ class _CategorylistPageState extends State<CategorylistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(ConfigApi.appName),
+      appBar: AppBarComponent(
+        appBarColor: HexColor("#F82249"), // Color personalizado
       ),
       drawer: NavigationDrawerWidget(),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Campo de búsqueda
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: searchController,
-                onChanged: (value) {
-                  _onSearch(value); // Llamar a _onSearch en cada cambio de texto
-                },
-                decoration: InputDecoration(
-                  labelText: 'Buscar categoría', // Texto del buscador
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      _onSearch(searchController.text); // Llamar a _onSearch cuando se presiona el botón de búsqueda
-                    },
+            Container(
+              height: 68,
+              color: HexColor("#F82249"),
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5, left: 5),
+                child: TextField(
+                  cursorColor: Colors.white,
+                  controller: searchController,
+                  onChanged: (value) {
+                    _onSearch(value);
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Buscar categoría',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.search, color: Colors.white),
+                      onPressed: () {
+                        _onSearch(searchController.text);
+                      },
+                    ),
                   ),
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CategoryCreatePage(),
+            Container(
+              color: HexColor("#F82249"),
+              padding: EdgeInsets.symmetric(horizontal: 28, vertical: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 160,
+                    child: Text(
+                      '¡Bienvenido a la gestión de categorías!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              },
-              child: Text('CREAR '),
-            ),
-            Column(
-              children: item.map<Widget>((category) {
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          child: Text(category.nombre ?? 'No Name'),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryCreatePage(),
                         ),
-                        Container(
-                          padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                          child: ButtonBar(
-                            alignment: MainAxisAlignment.end,
+                      );
+                    },
+                    child: ClipPath(
+                      clipper: SideCutClipper(),
+                      child: Container(
+                        height: 40,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Stack(
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: category.foto ?? '', // URL de la foto
-                                    imageBuilder: (context, imageProvider) =>
-                                        CircleAvatar(
-                                      backgroundImage: imageProvider,
-                                      radius: 50, // Ajusta el tamaño
-                                    ),
-                                    placeholder: (context, url) => CircleAvatar(
-                                      backgroundImage: AssetImage('assets/nofoto.jpg'),
-                                      radius: 50, 
-                                    ),
-                                    errorWidget: (context, url, error) => CircleAvatar(
-                                      backgroundImage: AssetImage('assets/nofoto.jpg'),
-                                      radius: 50,
-                                    ),
-                                  ),
-                                ],
+                              Icon(
+                                Icons.add,
+                                color: Colors.red,
+                                opticalSize: 18,
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CategoryEditPage(
-                                        item: category,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Text('Editar '),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => _showDeleteDialog(category.id!, category.foto!),
-                                child: Text('Eliminar '),
+                              Text(
+                                'Crear',
+                                style: TextStyle(
+                                  color: HexColor("#F82249"),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: 16),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Column(
+              children: item.map<Widget>((category) {
+                return Dismissible(
+                  key: Key(category.id.toString()), // Clave única
+                  direction: DismissDirection
+                      .endToStart, // Deslizar de derecha a izquierda
+                  background: Container(
+                    color: HexColor("#F82249"),
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                  confirmDismiss: (direction) async {
+                    // Confirmar antes de eliminar
+                    bool? shouldDelete = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Confirmar eliminación"),
+                          content:
+                              Text("¿Estás seguro de eliminar esta categoría?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: Text("Cancelar"),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: Text("Eliminar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    return shouldDelete ?? false;
+                  },
+                  onDismissed: (direction) {
+                    _removeCategory(category.id!, category.foto!);
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 28, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: HexColor("#F82249"),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Nombre :',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          category.nombre ?? 'No hay nombre',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Tag :',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          category.tag ?? 'No hay Tag',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Fecha de Creación:',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                            width:
+                                                8), // Espaciado entre el texto y la fecha
+                                        Text(
+                                          category.createdAt != null
+                                              ? DateFormat('dd/MM/yyyy').format(
+                                                  DateTime.parse(category
+                                                      .createdAt!)) // Convertir el String a DateTime
+                                              : 'Fecha no disponible', // Valor predeterminado si es nulo
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CategoryEditPage(item: category),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      child:
+                                          Icon(Icons.edit, color: Colors.white),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      child: Icon(Icons.remove_red_eye_outlined,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                    ],
+                  ),
                 );
               }).toList(),
             ),

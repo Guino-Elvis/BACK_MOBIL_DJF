@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter_api_rest/src/components/app_bar_create.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/routes/route.dart';
 import 'package:front_flutter_api_rest/src/services/api.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CategoryCreatePage extends StatefulWidget {
@@ -49,7 +51,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
       final nuevaCategoria = CategoriaModel(
         nombre: _nombreController.text,
         tag: _tagController.text,
-        estado:selectedEstado ?? "",
+        estado: selectedEstado ?? "",
         foto: downloadUrl ?? '', // Usar la URL de descarga de la imagen
       );
 
@@ -99,7 +101,6 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
     }
   }
 
-  
   List<String> estados = [
     'Activo',
     'Inactivo',
@@ -108,87 +109,187 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text(ConfigApi.appName),
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.categoryListRoute);
-            },
-            icon: const Icon(
-              Icons.logout,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _nombreController,
-                decoration: InputDecoration(labelText: 'Nombre'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un nombre';
-                  }
-                  return null;
-                },
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppBarCreate(
+              onBackTap: () {
+                Navigator.pushNamed(context, AppRoutes.categoryListRoute);
+              },
+            ),
+            SizedBox(height: 20), // Espacio entre la AppBar y el formulario
+            Card(
+              color: Colors.white,
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
               ),
-              TextFormField(
-                controller: _tagController,
-                decoration: InputDecoration(labelText: 'tag'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el tag';
-                  }
-                  return null;
-                },
-              ),
-              DropdownButtonFormField<String>(
-                value: selectedEstado,
-                onChanged: (String? newValue) {
-                  // Aquí puedes manejar el cambio de valor seleccionado
-                  setState(() {
-                    selectedEstado = newValue;
-                  });
-                },
-                items: estados.map((String estado) {
-                  return DropdownMenuItem<String>(
-                    value: estado,
-                    child: Text(estado),
-                  );
-                }).toList(),
-                decoration: InputDecoration(
-                  labelText: 'Estado',
-                  hintText: 'Selecciona un Estado par el Item',
-                  icon: Icon(Icons.category_outlined),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Campo Nombre
+                      TextFormField(
+                        controller: _nombreController,
+                        decoration: InputDecoration(
+                          labelText: 'Nombre',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa un nombre';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      // Campo Tag
+                      TextFormField(
+                        controller: _tagController,
+                        decoration: InputDecoration(
+                          labelText: 'Tag',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                           fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa el tag';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      // Dropdown de Estado
+                      DropdownButtonFormField<String>(
+                        value: selectedEstado,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedEstado = newValue;
+                          });
+                        },
+                        items: estados.map((String estado) {
+                          return DropdownMenuItem<String>(
+                            value: estado,
+                            child: Text(estado),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Estado',
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                           border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide(color: HexColor("#F82249")),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor selecciona un estado';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      // Botón de seleccionar imagen
+                      ElevatedButton.icon(
+                        onPressed: _pickImage,
+                        icon: Icon(Icons.image,color: Colors.white,),
+                        label: Text('Seleccionar Imagen',style: TextStyle(color: Colors.white),),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: HexColor("#F82249"),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      if (selectedImage != null)
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              selectedImage!,
+                              width: 150,
+                              height: 150,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      SizedBox(height: 30),
+                      // Botón de crear categoría
+                      ElevatedButton(
+                        onPressed: _crearCategoria,
+                        child: Text(
+                          'Crear Item',
+                          style: TextStyle(fontSize: 15,color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15,horizontal: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa el estado';
-                  }
-                  return null;
-                },
               ),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Seleccionar Imagen'),
-              ),
-              if (selectedImage != null) Image.file(selectedImage!),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _crearCategoria,
-                child: Text('Crear Categoría'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
