@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
-  final Color appBarColor; // Variable para el color del AppBar
+  final Color appBarColor; 
 
-  // Constructor que acepta el color como argumento
+
   AppBarComponent({required this.appBarColor});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: appBarColor, // Usa el color pasado como parámetro
+      backgroundColor: appBarColor,
       leading: IconButton(
         icon: Icon(Icons.menu ,color: Colors.white,), // Icono del drawer
         onPressed: () {
@@ -19,12 +19,12 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
       ),
       
       actions: [
-        // Imagen de perfil circular con opciones
+       
         Padding(
           padding: const EdgeInsets.only(right: 18.0),
           child: GestureDetector(
             onTap: () {
-              // Al tocar la imagen, aparece el menú
+           
               showMenu(
                 context: context,
                 position: RelativeRect.fromLTRB(1000, 70, 10, 10),
@@ -60,7 +60,7 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  // Método para manejar la selección de opciones del menú de perfil
+
   void _onMenuOptionSelected(BuildContext context, int value) {
     switch (value) {
       case 0:
@@ -83,5 +83,5 @@ class AppBarComponent extends StatelessWidget implements PreferredSizeWidget {
 
  
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight); // Altura estándar del AppBar
+  Size get preferredSize => Size.fromHeight(kToolbarHeight); 
 }

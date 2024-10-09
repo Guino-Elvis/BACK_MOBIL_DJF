@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter_api_rest/src/components/app_bar_edit.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
@@ -92,24 +93,23 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final urls = Providers.provider();
-    // final urlString = urls['fotosback']!;
-
-    // final imageUrl = widget.item.foto != null && widget.item.foto!.isNotEmpty
-    //     ? urlString + widget.item.foto!
-    //     : 'assets/nofoto.jpg';
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-            'Editar Categoría: ${widget.item.nombre ?? 'Sin Nombre'}'), // Muestra 'Sin Nombre' si el nombre es nulo
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //       'Editar Categoría: ${widget.item.nombre ?? 'Sin Nombre'}'), // Muestra 'Sin Nombre' si el nombre es nulo
+      // ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            AppBarEdit(
+              onBackTap: () {
+                Navigator.pushNamed(context, AppRoutes.categoryListRoute);
+              },
+            ),
             // Contenedor para mostrar la imagen con un estilo mejorado
             Center(
               child: ClipRRect(
@@ -221,15 +221,22 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                       // Botón para seleccionar una imagen
                       ElevatedButton.icon(
                         onPressed: _pickImage,
-                        icon: Icon(Icons.image),
-                        label: Text('Seleccionar Imagen'),
+                        icon: Icon(
+                          Icons.image,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Seleccionar Imagen',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                               vertical: 12, horizontal: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          backgroundColor: Colors.blueAccent,
+                          backgroundColor: HexColor("#F82249"),
                         ),
                       ),
                       SizedBox(height: 10),
@@ -250,11 +257,12 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                       ElevatedButton(
                         onPressed: _editarCategoria,
                         child: Text(
-                          'Actualizar Categoría',
-                          style: TextStyle(fontSize: 18),
+                          'Actualizar Item',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

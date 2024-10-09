@@ -1,9 +1,7 @@
 package com.example.ventas.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
-
 import lombok.Data;
 
 @Entity
@@ -16,11 +14,18 @@ public class Categoria {
     private String tag;
     private String foto;
     private String estado;
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = LocalDateTime.now(); // Se establece solo al crear
+        updatedAt = LocalDateTime.now(); // Se establece al crear
+    }
 
     @PreUpdate
     private void preUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now(); // Se actualiza solo al modificar
     }
 }

@@ -9,6 +9,7 @@ import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/pages/category_crud/category_create_page.dart';
 import 'package:front_flutter_api_rest/src/pages/category_crud/category_edit_page.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
+import 'package:front_flutter_api_rest/src/pages/category_crud/category_show_page.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
@@ -343,7 +344,15 @@ class _CategorylistPageState extends State<CategorylistPage> {
                                     height: 8,
                                   ),
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CategoryShowPage(item: category),
+                                        ),
+                                      );
+                                    },
                                     child: Container(
                                       child: Icon(Icons.remove_red_eye_outlined,
                                           color: Colors.white),

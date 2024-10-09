@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Asegúrate de inicializar los bindings
-  // Inicializa Firebase con las opciones de configuración
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: FirebaseConfig.options,
   );

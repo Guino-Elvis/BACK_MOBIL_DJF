@@ -13,7 +13,6 @@ class AppRoutes {
      homeRoute: (context) => AdminHomePage(), 
      categoryListRoute: (context) => CategorylistPage(),   
      
-     
     };
   }
 }

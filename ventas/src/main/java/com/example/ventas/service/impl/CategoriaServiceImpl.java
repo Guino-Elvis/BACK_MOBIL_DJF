@@ -11,6 +11,8 @@ import com.example.ventas.entity.Categoria;
 import com.example.ventas.repository.CategoriaRepository;
 import com.example.ventas.service.CategoriaService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 
@@ -34,7 +36,19 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria actualizar(Categoria categoria) {
-        return categoriaRepository.save(categoria);
+        // Primero, obtén la entidad existente desde la base de datos
+        Categoria categoriaExistente = categoriaRepository.findById(categoria.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
+
+        // Solo actualiza los campos que deseas cambiar
+        categoriaExistente.setNombre(categoria.getNombre());
+        categoriaExistente.setTag(categoria.getTag());
+        categoriaExistente.setFoto(categoria.getFoto());
+        categoriaExistente.setEstado(categoria.getEstado());
+        // No toques createdAt
+
+        // Guarda los cambios
+        return categoriaRepository.save(categoriaExistente);
     }
 
     @Override
