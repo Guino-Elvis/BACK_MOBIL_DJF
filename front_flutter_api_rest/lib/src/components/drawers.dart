@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter_api_rest/src/controller/auth/ShareApiTokenController.dart';
 import 'package:front_flutter_api_rest/src/providers/theme.dart';
 import 'package:front_flutter_api_rest/src/routes/route.dart';
 import 'package:provider/provider.dart';
@@ -19,21 +20,21 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
   @override
   void initState() {
     super.initState();
-    // loadUserProfile();
+    loadUserProfile();
   }
 
-  // Future<void> loadUserProfile() async {
-  //   final loginDetails = await ShareApiTokenService.loginDetails();
+  Future<void> loadUserProfile() async {
+    final loginDetails = await ShareApiTokenController.loginDetails();
 
-  //   if (loginDetails != null) {
-  //     setState(() {
-  //       accountName = truncateText(loginDetails.user?.name ?? "", 10);
-  //       accountEmail = truncateText(loginDetails.user?.email ?? "", 15);
-  //       accountFoto = loginDetails.user?.foto ?? "";
-  //       accountRole = loginDetails.user?.role ?? "";
-  //     });
-  //   }
-  // }
+    if (loginDetails != null) {
+      setState(() {
+        accountName = truncateText(loginDetails.user?.name ?? "", 10);
+        accountEmail = truncateText(loginDetails.user?.email ?? "", 15);
+        accountFoto = loginDetails.user?.foto ?? "";
+        accountRole = loginDetails.user?.role ?? "";
+      });
+    }
+  }
 
   String truncateText(String text, int maxLength) {
     if (text.length <= maxLength) {
@@ -49,9 +50,9 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
     final themeProvider = context.watch<ThemeProvider>();
     final themeColors = themeProvider.getThemeColors();
 
-    final name = 'Guino Elvis';
-    final email = 'gino@gmail.com';
-    final urlImage = 'no foto';
+    final name = '$accountName';
+    final email = '$accountEmail';
+    final urlImage = '$accountFoto';
 
     return Drawer(
       child: Material(
@@ -75,83 +76,29 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                     text: 'Home',
                     icon: Icons.home,
                     onTap: () {
-                       Navigator.pushNamed(context, AppRoutes.homeRoute);  // Usar la constante de la ruta
-                    },
-                  ),
-
-                   buildMenuItem(
-                    text: 'Categoria',
-                    icon: Icons.category,
-                    onTap: () {
-                       Navigator.pushNamed(context, AppRoutes.categoryListRoute);  // Usar la constante de la ruta
+                      Navigator.of(context).pushNamed(
+                        accountRole == 'user' ? '/user_home' : '/admin_home',
+                      );
                     },
                   ),
 
                   const SizedBox(height: 16),
                   if (accountRole == 'user') ...[
                     buildMenuItem(
-                      text: 'Libros',
+                      text: 'CAAA',
                       icon: CupertinoIcons.book,
                       onTap: () {
-                        Navigator.of(context).pushNamed('/librohome');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'Portal',
-                      icon: Icons.school_outlined,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/colegiohome');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'Workflow',
-                      icon: Icons.workspaces_outline,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/workflow');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'Updates',
-                      icon: Icons.update,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/updates');
+                      //  Navigator.of(context).pushNamed('/librohome');
                       },
                     ),
                   ],
                   if (accountRole == 'admin') ...[
-                    // Opciones específicas para el rol de administrador
                     buildMenuItem(
-                      text: 'Usuarios_Crud',
-                      icon: Icons.person,
+                      text: 'Categoria',
+                      icon: Icons.category,
                       onTap: () {
-                        Navigator.of(context).pushNamed('/usuario');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'Categorias_Crud',
-                      icon: Icons.person,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/category');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'reserva_crud',
-                      icon: CupertinoIcons.book_solid,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/reserva_crud');
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    buildMenuItem(
-                      text: 'Libro_Crud',
-                      icon: CupertinoIcons.book_solid,
-                      onTap: () {
-                        Navigator.of(context).pushNamed('/libro_crud');
+                        Navigator.pushNamed(
+                            context, AppRoutes.categoryListRoute);
                       },
                     ),
                   ],
@@ -193,7 +140,7 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                     text: 'Logout',
                     icon: Icons.logout,
                     onTap: () {
-                    
+                      ShareApiTokenController.logout(context);
                     },
                   ),
                 ],

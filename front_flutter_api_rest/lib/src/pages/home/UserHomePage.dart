@@ -6,12 +6,12 @@ import 'package:front_flutter_api_rest/src/services/api.dart';
 
 
 
-class AdminHomePage extends StatefulWidget {
+class UserHomePage extends StatefulWidget {
   @override
-  _AdminHomePageState createState() => _AdminHomePageState();
+  _UserHomePageState createState() => _UserHomePageState();
 }
 
-class _AdminHomePageState extends State<AdminHomePage> {
+class _UserHomePageState extends State<UserHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
  
   @override
@@ -45,7 +45,7 @@ Widget build(BuildContext context) {
     body: Column(
       children: [
         Container(
-          child: Text('holaaa SOY ADMIN'),
+          child: Text('holaaa SOY USER'),
         )
       ],
     ),

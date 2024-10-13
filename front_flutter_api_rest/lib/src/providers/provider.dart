@@ -8,6 +8,9 @@ class Providers {
     return {
    
       'categoryListProvider': ConfigApi.buildUrl('/categoria'),
+      'loginProvider': ConfigApi.buildUrl('/auth/login'),
+      'registerProvider': ConfigApi.buildUrl('/auth/create'),
+      'userListProvider': ConfigApi.buildUrl('/auth/list'),
     };
   }
 }

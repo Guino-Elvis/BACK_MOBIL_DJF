@@ -26,34 +26,6 @@ public class AuthUserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // @PostMapping("/login")
-    // public ResponseEntity<TokenDto> login(@RequestBody AuthUserDto authUserDto) {
-    // TokenDto tokenDto = authUserService.login(authUserDto);
-    // if (tokenDto == null)
-    // return ResponseEntity.badRequest().build();
-    // return ResponseEntity.ok(tokenDto);
-    // }
-
-    // @PostMapping("/login")
-    // public ResponseEntity<AuthResponseDto> login(@RequestBody AuthUserDto
-    // authUserDto) {
-    // AuthResponseDto response = new AuthResponseDto();
-    // TokenDto token = authUserService.login(authUserDto);
-    // if (token == null) {
-    // return ResponseEntity.badRequest().build();
-    // }
-    // AuthUserDto authenticatedUser =
-    // authUserService.getUserData(authUserDto.getEmail()); // Obtener los datos del
-    // // usuario autenticado
-    // if (authenticatedUser == null) {
-    // // Manejar el caso en el que no se pueda obtener los datos del usuario
-    // return ResponseEntity.badRequest().build();
-    // }
-    // response.setToken(token);
-    // response.setUser(authenticatedUser);
-    // return ResponseEntity.ok(response);
-    // }
-
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody AuthUserDto authUserDto) {
         AuthResponseDto response = new AuthResponseDto();
