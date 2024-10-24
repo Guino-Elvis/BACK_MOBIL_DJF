@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter_api_rest/src/providers/theme.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 
 class AppBarShow extends StatelessWidget {
   final VoidCallback? onBackTap;
@@ -11,8 +13,10 @@ class AppBarShow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final themeColors = themeProvider.getThemeColors();
     return Container(
-      color: HexColor("#F82249"),
+      color:  themeProvider.isDiurno ? themeColors[2] : themeColors[0],
       padding: EdgeInsets.only(left: 2, right: 2),
       child: Row(
         children: [

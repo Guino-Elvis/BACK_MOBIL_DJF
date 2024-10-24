@@ -9,17 +9,18 @@ import 'package:front_flutter_api_rest/src/pages/home/welcome.dart';
 
 
 class AppRoutes {
- static const String welcomeRoute = '/';
+//  static const String welcomeRoute = '/';
   static const String loginRoute = '/login';
   static const String registerRoute = '/register';
-  static const String homeRoute = '/home';
+  // static const String homeRoute = '/home';
+  static const String homeRoute = '/';
   static const String userhomeRoute = '/user_home';
   static const String adminhomeRoute = '/admin_home';
   static const String categoryListRoute = '/crud_category_list';
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      welcomeRoute: (context) => WelcomePage(),
+      // welcomeRoute: (context) => WelcomePage(),
       loginRoute: (context) => LoginPage(),
       registerRoute: (context) => RegisterPage(),
       homeRoute: (context) => HomePage(),

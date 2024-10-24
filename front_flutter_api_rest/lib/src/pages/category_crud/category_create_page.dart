@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:front_flutter_api_rest/src/components/app_bar_create.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
+import 'package:front_flutter_api_rest/src/providers/theme.dart';
 import 'package:front_flutter_api_rest/src/routes/route.dart';
 import 'package:front_flutter_api_rest/src/services/api.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class CategoryCreatePage extends StatefulWidget {
   @override
@@ -107,9 +109,11 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
   ];
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final themeColors = themeProvider.getThemeColors();
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
         child: Column(
@@ -122,7 +126,7 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
             ),
             SizedBox(height: 20), // Espacio entre la AppBar y el formulario
             Card(
-              color: Colors.white,
+              color: themeProvider.isDiurno ? themeColors[2] : themeColors[7],
               elevation: 5,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
@@ -137,25 +141,34 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                       // Campo Nombre
                       TextFormField(
                         controller: _nombreController,
+                        style: TextStyle(
+                          color: themeProvider.isDiurno
+                              ? themeColors[7]
+                              : themeColors[2],
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Nombre',
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black54,
+                            color: themeProvider.isDiurno
+                                ? themeColors[7]
+                                : themeColors[1],
                           ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: themeProvider.isDiurno
+                              ? themeColors[1]
+                              : themeColors[7],
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         validator: (value) {
@@ -169,25 +182,34 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                       // Campo Tag
                       TextFormField(
                         controller: _tagController,
+                        style: TextStyle(
+                          color: themeProvider.isDiurno
+                              ? themeColors[7]
+                              : themeColors[2],
+                        ),
                         decoration: InputDecoration(
                           labelText: 'Tag',
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black54,
+                            color: themeProvider.isDiurno
+                                ? themeColors[7]
+                                : themeColors[1],
                           ),
                           filled: true,
-                           fillColor: Colors.white,
+                          fillColor: themeProvider.isDiurno
+                              ? themeColors[1]
+                              : themeColors[7],
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         validator: (value) {
@@ -209,28 +231,35 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                         items: estados.map((String estado) {
                           return DropdownMenuItem<String>(
                             value: estado,
-                            child: Text(estado),
+                            child: Text(
+                              estado,
+                              style: TextStyle(color: Colors.blue),
+                            ),
                           );
                         }).toList(),
                         decoration: InputDecoration(
                           labelText: 'Estado',
                           labelStyle: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black54,
+                            color: themeProvider.isDiurno
+                                ? themeColors[7]
+                                : themeColors[1],
                           ),
                           filled: true,
-                          fillColor: Colors.white,
-                           border: OutlineInputBorder(
+                          fillColor: themeProvider.isDiurno
+                              ? themeColors[1]
+                              : themeColors[7],
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                         validator: (value) {
@@ -244,27 +273,50 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                       // Botón de seleccionar imagen
                       ElevatedButton.icon(
                         onPressed: _pickImage,
-                        icon: Icon(Icons.image,color: Colors.white,),
-                        label: Text('Seleccionar Imagen',style: TextStyle(color: Colors.white),),
+                        icon: Icon(
+                          Icons.image,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Seleccionar Imagen',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                               vertical: 12, horizontal: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          backgroundColor: HexColor("#F82249"),
+                          backgroundColor: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 10),
                       if (selectedImage != null)
                         Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              selectedImage!,
-                              width: 150,
-                              height: 150,
-                              fit: BoxFit.cover,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: themeProvider.isDiurno
+                                  ? themeColors[2]
+                                  : themeColors[0],
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white
+                                      .withOpacity(0.4), // Sombra más suave
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                selectedImage!,
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
@@ -274,10 +326,11 @@ class _CategoryCreatePageState extends State<CategoryCreatePage> {
                         onPressed: _crearCategoria,
                         child: Text(
                           'Crear Item',
-                          style: TextStyle(fontSize: 15,color: Colors.white),
+                          style: TextStyle(fontSize: 15, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15,horizontal: 15),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

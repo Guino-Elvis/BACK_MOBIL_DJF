@@ -11,11 +11,12 @@ import 'package:front_flutter_api_rest/src/pages/category_crud/category_edit_pag
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/pages/category_crud/category_show_page.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
+import 'package:front_flutter_api_rest/src/providers/theme.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:path/path.dart'
-    as path; // Cambia el nombre a 'path' o el que prefieras
+import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart'; // Cambia el nombre a 'path' o el que prefieras
 
 class CategorylistPage extends StatefulWidget {
   @override
@@ -90,11 +91,13 @@ class _CategorylistPageState extends State<CategorylistPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final themeColors = themeProvider.getThemeColors();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
       key: _scaffoldKey,
       appBar: AppBarComponent(
-        appBarColor: HexColor("#F82249"), // Color personalizado
+        appBarColor: themeProvider.isDiurno ? themeColors[2] : themeColors[0],
       ),
       drawer: NavigationDrawerWidget(),
       body: SingleChildScrollView(
@@ -102,7 +105,7 @@ class _CategorylistPageState extends State<CategorylistPage> {
           children: [
             Container(
               height: 68,
-              color: HexColor("#F82249"),
+              color: themeProvider.isDiurno ? themeColors[2] : themeColors[0],
               padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               child: Padding(
                 padding: const EdgeInsets.only(right: 5, left: 5),
@@ -112,6 +115,7 @@ class _CategorylistPageState extends State<CategorylistPage> {
                   onChanged: (value) {
                     _onSearch(value);
                   },
+                  style: TextStyle(color: themeProvider.isDiurno ? themeColors[7] : themeColors[2],), 
                   decoration: InputDecoration(
                     labelText: 'Buscar categoría',
                     labelStyle: TextStyle(color: Colors.white),
@@ -138,7 +142,17 @@ class _CategorylistPageState extends State<CategorylistPage> {
               ),
             ),
             Container(
-              color: HexColor("#F82249"),
+              decoration: BoxDecoration(
+                color: themeProvider.isDiurno ? themeColors[2] : themeColors[0],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.1), // Sombra más suave
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(-2, 8),
+                  ),
+                ],
+              ),
               padding: EdgeInsets.symmetric(horizontal: 28, vertical: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,13 +192,13 @@ class _CategorylistPageState extends State<CategorylistPage> {
                             children: [
                               Icon(
                                 Icons.add,
-                                color: Colors.red,
+                                color: Colors.blue,
                                 opticalSize: 18,
                               ),
                               Text(
                                 'Crear',
                                 style: TextStyle(
-                                  color: HexColor("#F82249"),
+                                  color: Colors.blue,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -208,7 +222,7 @@ class _CategorylistPageState extends State<CategorylistPage> {
                   direction: DismissDirection
                       .endToStart, // Deslizar de derecha a izquierda
                   background: Container(
-                    color: HexColor("#F82249"),
+                    color: Colors.blue,
                     alignment: Alignment.centerRight,
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Icon(
@@ -251,8 +265,19 @@ class _CategorylistPageState extends State<CategorylistPage> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                         decoration: BoxDecoration(
-                          color: HexColor("#F82249"),
+                          color: themeProvider.isDiurno
+                              ? themeColors[2]
+                              : themeColors[0],
                           borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white
+                                  .withOpacity(0.1), // Sombra más suave
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(-2, 2),
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: Row(

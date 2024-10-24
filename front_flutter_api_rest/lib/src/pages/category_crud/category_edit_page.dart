@@ -7,9 +7,11 @@ import 'package:front_flutter_api_rest/src/components/app_bar_edit.dart';
 import 'package:front_flutter_api_rest/src/controller/categoryController.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
+import 'package:front_flutter_api_rest/src/providers/theme.dart';
 import 'package:front_flutter_api_rest/src/routes/route.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class CategoryEditPage extends StatefulWidget {
   final CategoriaModel item;
@@ -93,12 +95,14 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final themeColors = themeProvider.getThemeColors();
     return Scaffold(
       // appBar: AppBar(
       //   title: Text(
       //       'Editar Categoría: ${widget.item.nombre ?? 'Sin Nombre'}'), // Muestra 'Sin Nombre' si el nombre es nulo
       // ),
-      backgroundColor: Colors.white,
+      backgroundColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -112,22 +116,39 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
             ),
             // Contenedor para mostrar la imagen con un estilo mejorado
             Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: CachedNetworkImage(
-                  imageUrl: widget.item.foto.toString(),
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) =>
-                      Image.asset('assets/nofoto.jpg'),
-                  fit: BoxFit.cover,
-                  height: 200,
-                  width: 200,
+              child: Container(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.item.foto.toString(),
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) =>
+                        Image.asset('assets/nofoto.jpg'),
+                    fit: BoxFit.cover,
+                    height: 200,
+                    width: 200,
+                  ),
                 ),
+                 decoration: BoxDecoration(
+                      color: themeProvider.isDiurno
+                          ? themeColors[2]
+                          : themeColors[0],
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color:
+                              Colors.white.withOpacity(0.4), // Sombra más suave
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
               ),
             ),
             SizedBox(height: 20), // Espaciado entre imagen y formulario
             Card(
-              color: Colors.white,
+              color: themeProvider.isDiurno ? themeColors[2] : themeColors[7],
               elevation: 5,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
@@ -141,22 +162,24 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                       // Campo de texto para el nombre
                       TextFormField(
                         controller: _nombreController,
+                        style: TextStyle(color: themeProvider.isDiurno ? themeColors[7] : themeColors[2],), 
                         decoration: InputDecoration(
                           labelText: 'Nombre',
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(fontWeight: FontWeight.bold,
+                          color: themeProvider.isDiurno ? themeColors[7] : themeColors[1],),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                       ),
@@ -164,22 +187,27 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                       // Campo de texto para el tag
                       TextFormField(
                         controller: _tagController,
+                        style: TextStyle(color: themeProvider.isDiurno ? themeColors[7] : themeColors[2],), 
                         decoration: InputDecoration(
                           labelText: 'Tag',
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDiurno ? themeColors[7] : themeColors[1],
+                            
+                          ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                       ),
@@ -195,25 +223,31 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                         items: estados.map((String estado) {
                           return DropdownMenuItem<String>(
                             value: estado,
-                            child: Text(estado),
+                            child: Text(
+                              estado,
+                              style: TextStyle(color: Colors.blue,), 
+                              ),
                           );
                         }).toList(),
                         decoration: InputDecoration(
                           labelText: 'Estado',
-                          labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: themeProvider.isDiurno ? themeColors[7] : themeColors[1],
+                            ),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: themeProvider.isDiurno ? themeColors[1] : themeColors[7],
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide(color: HexColor("#F82249")),
+                            borderSide: BorderSide(color: Colors.blue),
                           ),
                         ),
                       ),
@@ -236,7 +270,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          backgroundColor: HexColor("#F82249"),
+                          backgroundColor: Colors.blue,
                         ),
                       ),
                       SizedBox(height: 10),
