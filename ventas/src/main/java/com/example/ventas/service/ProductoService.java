@@ -1,5 +1,6 @@
 package com.example.ventas.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,6 @@ public interface ProductoService {
 
     // Otros métodos existentes
     List<Producto> listarPorSubCategoria(Integer idEvento);
+
+    List<Producto> buscar(String nombre, LocalDateTime createdAt, LocalDateTime updatedAt, String estado);
 }

@@ -1,5 +1,6 @@
 package com.example.ventas.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,8 @@ import com.example.ventas.entity.Categoria;
 import com.example.ventas.entity.SubCategoria;
 import com.example.ventas.repository.SubCategoriaRepository;
 import com.example.ventas.service.SubCategoriaService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SubCategoriaServiceImpl implements SubCategoriaService {
@@ -25,13 +28,35 @@ public class SubCategoriaServiceImpl implements SubCategoriaService {
     }
 
     @Override
+    public List<SubCategoria> buscar(String nombre, LocalDateTime createdAt, LocalDateTime updatedAt, String estado) {
+        return subCategoriaRepository.buscarPorParametros(nombre, createdAt, updatedAt, estado);
+    }
+
+    @Override
     public SubCategoria guardar(SubCategoria subCategoria) {
         return subCategoriaRepository.save(subCategoria);
     }
 
+    // @Override
+    // public SubCategoria actualizar(SubCategoria subCategoria) {
+    // return subCategoriaRepository.save(subCategoria);
+    // }
+
     @Override
     public SubCategoria actualizar(SubCategoria subCategoria) {
-        return subCategoriaRepository.save(subCategoria);
+        // Primero, obtén la entidad existente desde la base de datos
+        SubCategoria subCategoriaExistente = subCategoriaRepository.findById(subCategoria.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada"));
+
+        // Solo actualiza los campos que deseas cambiar
+        subCategoriaExistente.setNombre(subCategoria.getNombre());
+        subCategoriaExistente.setTag(subCategoria.getTag());
+        subCategoriaExistente.setFoto(subCategoria.getFoto());
+        subCategoriaExistente.setEstado(subCategoria.getEstado());
+        // No toques createdAt
+
+        // Guarda los cambios
+        return subCategoriaRepository.save(subCategoriaExistente);
     }
 
     @Override

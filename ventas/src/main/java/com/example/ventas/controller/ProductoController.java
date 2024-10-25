@@ -1,9 +1,11 @@
 package com.example.ventas.controller;
 
+import com.example.ventas.entity.Categoria;
 import com.example.ventas.entity.Producto;
 
 import com.example.ventas.service.ProductoService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,17 @@ public class ProductoController {
     @GetMapping()
     public ResponseEntity<List<Producto>> list() {
         return ResponseEntity.ok().body(productoService.listar());
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Producto>> buscar(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) LocalDateTime createdAt,
+            @RequestParam(required = false) LocalDateTime updatedAt,
+            @RequestParam(required = false) String estado) {
+
+        List<Producto> productos = productoService.buscar(nombre, createdAt, updatedAt, estado);
+        return ResponseEntity.ok().body(productos);
     }
 
     @PostMapping()
