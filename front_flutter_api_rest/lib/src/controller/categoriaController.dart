@@ -1,21 +1,19 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
+import 'package:front_flutter_api_rest/src/services/sheet_exel.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis/sheets/v4.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:http_parser/http_parser.dart';
-import 'package:mime/mime.dart';
-import 'package:path/path.dart';
 
-class CategoryController {
+
+class CategoriaController {
   static const _scopes = [SheetsApi.spreadsheetsScope];
   final _sheetName = 'Sheet1';
-  final String _spreadsheetId = '1H5qZGHai8TLDDIcniCJSNr3d-YE8hxcYZobWBt6LFo8';
-
+  final String _spreadsheetId = ExelSheet.categoriaSheet;
+ 
   Future<AutoRefreshingAuthClient> _getAuthClient() async {
     final credentialsJson =
         await rootBundle.loadString('assets/credencial_sheet.json');
@@ -155,7 +153,7 @@ class CategoryController {
   Future<List<dynamic>> getDataCategories({String? nombre}) async {
   try {
     final urls = Providers.provider();
-    String urlString = urls['categoryListProvider']!;
+    String urlString = urls['categoriaListProvider']!;
 
     // Si el nombre es proporcionado, lo agregamos como parámetro de búsqueda
     if (nombre != null && nombre.isNotEmpty) {
@@ -179,7 +177,7 @@ class CategoryController {
   Future<http.Response> crearCategoria(CategoriaModel nuevaCategoria) async {
     // Obtener la URL del proveedor
     final urls = Providers.provider();
-    final urlString = urls['categoryListProvider']!;
+    final urlString = urls['categoriaListProvider']!;
     final url = Uri.parse(urlString);
 
     // Crear el cuerpo de la solicitud
@@ -220,7 +218,7 @@ class CategoryController {
   Future<http.Response> editarCategoria(CategoriaModel categoriaEditada) async {
     // Obtener la URL del proveedor
     final urls = Providers.provider();
-    final urlString = urls['categoryListProvider']!;
+    final urlString = urls['categoriaListProvider']!;
     final url =
         Uri.parse(urlString); // URL sin ID, ya que se enviará en el cuerpo
 
@@ -259,7 +257,7 @@ class CategoryController {
 
   Future<http.Response> removeCategoria(int id, String fotoURL) async {
     final urls = Providers.provider();
-    final urlString = urls['categoryListProvider']!;
+    final urlString = urls['categoriaListProvider']!;
     final url = Uri.parse('$urlString/$id');
 
     var response = await http.delete(

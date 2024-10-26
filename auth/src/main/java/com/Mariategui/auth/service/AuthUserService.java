@@ -1,5 +1,6 @@
 package com.Mariategui.auth.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.Mariategui.auth.dto.AuthUserDto;
@@ -26,5 +27,7 @@ public interface AuthUserService {
     public boolean isPasswordConfirmed(AuthUserDto authUserDto);
 
     AuthUserDto getUserData(String email);
+
+    List<AuthUser> buscar(String name, LocalDateTime created_at, LocalDateTime updated_at, String codigo);
 
 }

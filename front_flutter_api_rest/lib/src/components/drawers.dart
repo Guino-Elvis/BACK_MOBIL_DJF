@@ -88,7 +88,7 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                       text: 'CAAA',
                       icon: CupertinoIcons.book,
                       onTap: () {
-                      //  Navigator.of(context).pushNamed('/librohome');
+                        //  Navigator.of(context).pushNamed('/librohome');
                       },
                     ),
                   ],
@@ -98,7 +98,23 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                       icon: Icons.category,
                       onTap: () {
                         Navigator.pushNamed(
-                            context, AppRoutes.categoryListRoute);
+                            context, AppRoutes.categoriaListRoute);
+                      },
+                    ),
+                    buildMenuItem(
+                      text: 'Sub Categoria',
+                      icon: Icons.category,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, AppRoutes.subcategoriaListRoute);
+                      },
+                    ),
+                    buildMenuItem(
+                      text: 'Producto',
+                      icon: CupertinoIcons.collections,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, AppRoutes.productoListRoute);
                       },
                     ),
                   ],

@@ -9,16 +9,16 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class CategoryShowPage extends StatefulWidget {
+class CategoriaShowPage extends StatefulWidget {
   final CategoriaModel item;
 
-  CategoryShowPage({required this.item});
+  CategoriaShowPage({required this.item});
 
   @override
-  _CategoryShowPageState createState() => _CategoryShowPageState();
+  _CategoriaShowPageState createState() => _CategoriaShowPageState();
 }
 
-class _CategoryShowPageState extends State<CategoryShowPage> {
+class _CategoriaShowPageState extends State<CategoriaShowPage> {
   @override
   void initState() {
     super.initState();
@@ -38,7 +38,7 @@ class _CategoryShowPageState extends State<CategoryShowPage> {
           children: [
             AppBarShow(
               onBackTap: () {
-                Navigator.pushNamed(context, AppRoutes.categoryListRoute);
+                Navigator.pushNamed(context, AppRoutes.categoriaListRoute);
               },
               title: widget.item.nombre?.toString() ?? 'no hay nombre',
             ),

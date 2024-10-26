@@ -81,6 +81,17 @@ public class AuthUserController {
         return ResponseEntity.ok(userList);
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<List<AuthUser>> buscar(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) LocalDateTime created_at,
+            @RequestParam(required = false) LocalDateTime updated_at,
+            @RequestParam(required = false) String codigo) {
+
+        List<AuthUser> authUsers = authUserService.buscar(name, created_at, updated_at, codigo);
+        return ResponseEntity.ok().body(authUsers);
+    }
+
     @PutMapping()
     public ResponseEntity<AuthUser> update(@RequestBody AuthUserDto authUserDto) {
         Optional<AuthUser> existingUser = authUserService.listarPorId(authUserDto.getId());

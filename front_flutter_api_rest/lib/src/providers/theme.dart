@@ -3,7 +3,7 @@ import 'package:hexcolor/hexcolor.dart';
 
 
 class ThemeProvider extends ChangeNotifier {
-  bool _isDiurno = true;
+  bool _isDiurno = false;
 
   bool get isDiurno => _isDiurno;
 
@@ -21,17 +21,16 @@ class ThemeProvider extends ChangeNotifier {
   static Color color6 = Colors.black;
   static Color color7 = Colors.white;
   static Color color8 = Colors.transparent;
-  static Color color9 = Colors.white12;
-  static Color color10 = Colors.black12;
- 
+  static Color textdia_9 = Colors.grey.shade800;
+  static Color textdark_10 = Colors.grey;
 
   
   List<Color> diatheme() {
-    return [bluePersonalizado_0, fondodark_1, fondodarkcard_2, color3,color4, color5, color6, color7,color8,color9,color10]; 
+    return [bluePersonalizado_0, fondodark_1, fondodarkcard_2, color3,color4, color5, color6, color7,color8,textdia_9,textdark_10]; 
   }
 
   List<Color> nochetheme() {
-    return [bluePersonalizado_0, fondodark_1, fondodarkcard_2, color3,color4, color5, color6, color7,color8,color9,color10];
+    return [bluePersonalizado_0, fondodark_1, fondodarkcard_2, color3,color4, color5, color6, color7,color8,textdia_9,textdark_10];
   }
 
   List<Color> getThemeColors() {

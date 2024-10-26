@@ -48,6 +48,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public List<AuthUser> buscar(String name, LocalDateTime created_at, LocalDateTime updated_at, String codigo) {
+        return authRepository.buscarPorParametros(name, created_at, updated_at, codigo);
+    }
+
+    @Override
     public AuthUser save(AuthUserDto authUserDto) {
         Optional<AuthUser> user = authRepository.findByEmail(authUserDto.getEmail());
         if (user.isPresent()) {

@@ -19,7 +19,6 @@ public class Producto {
     private String precio;
     private String stock;
     private String foto;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_categoria_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })

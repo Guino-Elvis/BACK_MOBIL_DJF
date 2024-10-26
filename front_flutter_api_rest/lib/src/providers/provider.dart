@@ -7,7 +7,9 @@ class Providers {
   static Map<String, String> provider() {
     return {
    
-      'categoryListProvider': ConfigApi.buildUrl('/categoria'),
+      'categoriaListProvider': ConfigApi.buildUrl('/categoria'),
+      'subCategoriaListProvider': ConfigApi.buildUrl('/subcategoria'),
+      'productoListProvider': ConfigApi.buildUrl('/producto'),
       'loginProvider': ConfigApi.buildUrl('/auth/login'),
       'registerProvider': ConfigApi.buildUrl('/auth/create'),
       'userListProvider': ConfigApi.buildUrl('/auth/list'),
