@@ -13,6 +13,7 @@ class Providers {
       'loginProvider': ConfigApi.buildUrl('/auth/login'),
       'registerProvider': ConfigApi.buildUrl('/auth/create'),
       'userListProvider': ConfigApi.buildUrl('/auth/list'),
+      'authUserListProvider': ConfigApi.buildUrl('/auth'),
     };
   }
 }

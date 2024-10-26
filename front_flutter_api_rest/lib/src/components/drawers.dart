@@ -94,6 +94,14 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
                   ],
                   if (accountRole == 'admin') ...[
                     buildMenuItem(
+                      text: 'Usuarios',
+                      icon: Icons.person_outline_sharp,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, AppRoutes.usuarioListRoute);
+                      },
+                    ),
+                    buildMenuItem(
                       text: 'Categoria',
                       icon: Icons.category,
                       onTap: () {

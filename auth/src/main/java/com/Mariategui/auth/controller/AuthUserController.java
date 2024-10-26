@@ -81,7 +81,7 @@ public class AuthUserController {
         return ResponseEntity.ok(userList);
     }
 
-    @GetMapping("/buscar")
+    @GetMapping("/list/buscar")
     public ResponseEntity<List<AuthUser>> buscar(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) LocalDateTime created_at,

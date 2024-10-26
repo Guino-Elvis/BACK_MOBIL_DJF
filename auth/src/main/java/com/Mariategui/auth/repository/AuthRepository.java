@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface AuthRepository extends JpaRepository<AuthUser, Integer> {
     Optional<AuthUser> findByEmail(String email);
-    
-        @Query("SELECT c FROM AuthUser c WHERE "
+
+    @Query("SELECT c FROM AuthUser c WHERE "
             + "(:name IS NULL OR c.name LIKE %:name%) AND "
             + "(:codigo IS NULL OR c.codigo = :codigo) AND "
             + "(:created_at IS NULL OR c.created_at >= :created_at) AND "
@@ -25,5 +25,4 @@ public interface AuthRepository extends JpaRepository<AuthUser, Integer> {
             @Param("created_at") LocalDateTime created_at,
             @Param("updated_at") LocalDateTime updated_at,
             @Param("codigo") String codigo);
-}
 }
