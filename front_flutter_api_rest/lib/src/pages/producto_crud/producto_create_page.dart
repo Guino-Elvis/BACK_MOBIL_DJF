@@ -180,21 +180,40 @@ class _ProductoCreatePageState extends State<ProductoCreatePage> {
                           backgroundColor: Colors.blue,
                         ),
                       ),
+                      SizedBox(height: 10),
+                      if (selectedImage != null)
+                        Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: themeProvider.isDiurno
+                                  ? themeColors[2]
+                                  : themeColors[0],
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white
+                                      .withOpacity(0.4), // Sombra más suave
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                selectedImage!,
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
                       SizedBox(height: 30),
                       ElevatedButton(
                         onPressed: _crearProducto,
-                        child: Text(
-                          'Crear Item',
-                          style: TextStyle(fontSize: 15, color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
+                        child: Text('Crear Producto'),
                       ),
                     ],
                   ),

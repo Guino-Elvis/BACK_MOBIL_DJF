@@ -1,5 +1,7 @@
+// ignore: file_names
 import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:front_flutter_api_rest/src/components/sheet_style.dart';
 import 'package:front_flutter_api_rest/src/model/categoriaModel.dart';
 import 'package:front_flutter_api_rest/src/providers/provider.dart';
 import 'package:front_flutter_api_rest/src/services/sheet_exel.dart';
@@ -8,12 +10,11 @@ import 'package:googleapis/sheets/v4.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-
 class CategoriaController {
   static const _scopes = [SheetsApi.spreadsheetsScope];
-  final _sheetName = 'Sheet1';
-  final String _spreadsheetId = ExelSheet.categoriaSheet;
- 
+  final _sheetName = 'CATEGORIA';
+  final String _spreadsheetId = ExelSheet.hojaExelProyecto;
+
   Future<AutoRefreshingAuthClient> _getAuthClient() async {
     final credentialsJson =
         await rootBundle.loadString('assets/credencial_sheet.json');
@@ -22,57 +23,81 @@ class CategoriaController {
     return clientViaServiceAccount(accountCredentials, _scopes);
   }
 
-  Future<void> setupSheet() async {
+  Future<int?> _getSheetIdByName(SheetsApi sheetsApi, String sheetName) async {
+    try {
+      Spreadsheet spreadsheet =
+          await sheetsApi.spreadsheets.get(_spreadsheetId);
+      for (var sheet in spreadsheet.sheets!) {
+        if (sheet.properties!.title == sheetName) {
+          return sheet.properties!.sheetId;
+        }
+      }
+    } catch (e) {
+      print('Error al obtener el ID de la hoja: $e');
+    }
+    return null;
+  }
+
+  Future<void> formato_Hoja_encabezado() async {
     final authClient = await _getAuthClient();
     final sheetsApi = SheetsApi(authClient);
 
-    // Establecer el encabezado
-    final headerRow = [
-      'ID',
-      'Nombre',
-      'tag',
-      'estado',
-      'Imagen'
-    ]; // Nombres de las columnas
-    await _updateRow(0, headerRow);
+    final sheetStyle = SheetStyle(['ID', 'Nombre', 'Tag', 'Estado', 'Imagen']);
+    final range = '$_sheetName!A1:E1';
 
-    // Crear solicitud para agregar datos a la hoja de cálculo
-    final formatRequest = BatchUpdateSpreadsheetRequest.fromJson({
-      'requests': [
-        {
-          'updateCells': {
-            'rows': [
-              {
-                'values': [
-                  {
-                    'userEnteredValue': {
-                      'stringValue':
-                          _spreadsheetId, // Asumiendo que este es el valor que quieres agregar
-                    },
-                  },
-                ],
-              },
-            ],
-            'range': {
-              'sheetId': 0, // Asumiendo que es la primera hoja
-              'startRowIndex': 1, // Segunda fila
-              'startColumnIndex': 0,
-              'endColumnIndex': 1,
-            },
-            'fields': 'userEnteredValue',
-          },
-        },
-      ],
-    });
+    // Obtener el ID de la hoja usando el nombre
+    final sheetId = await _getSheetIdByName(sheetsApi, _sheetName);
 
+    if (sheetId == null) {
+      print('No se encontró la hoja con nombre $_sheetName');
+      return;
+    }
+    ValueRange response =
+        await sheetsApi.spreadsheets.values.get(_spreadsheetId, range);
+
+    if (response.values == null || response.values!.isEmpty) {
+      ValueRange headerRow = ValueRange.fromJson({
+        'values': [sheetStyle.headerRow]
+      });
+
+      await sheetsApi.spreadsheets.values.update(
+        headerRow,
+        _spreadsheetId,
+        range,
+        valueInputOption: 'USER_ENTERED',
+      );
+
+      print("Encabezado creado en A1.");
+    } else {
+      print("A1 ya tiene contenido, no se puede insertar el encabezado.");
+    }
+
+    final formatRequest = sheetStyle.getColumnFormatRequest(sheetId!);
     await sheetsApi.spreadsheets.batchUpdate(formatRequest, _spreadsheetId);
+  }
+
+  Future<List<String>> _getAllIds() async {
+    final authClient = await _getAuthClient();
+    final sheetsApi = SheetsApi(authClient);
+    final range = '$_sheetName!A:A';
+    ValueRange response =
+        await sheetsApi.spreadsheets.values.get(_spreadsheetId, range);
+    List<String> ids = [];
+    if (response.values != null) {
+      for (var row in response.values!) {
+        if (row.isNotEmpty) {
+          ids.add(row[0] as String);
+        }
+      }
+    }
+    return ids;
   }
 
   Future<void> listarCat() async {
     final authClient = await _getAuthClient();
     final sheetsApi = SheetsApi(authClient);
 
-    final range = '$_sheetName!A1:G'; // Asumiendo que hay 7 columnas A a G
+    final range = '$_sheetName!A2:G';
 
     try {
       ValueRange response =
@@ -95,14 +120,14 @@ class CategoriaController {
   Future<void> _addRow(List<String> row) async {
     final authClient = await _getAuthClient();
     final sheetsApi = SheetsApi(authClient);
-    final range = '$_sheetName!A1';
+    final range = '$_sheetName!A2';
 
     ValueRange vr = ValueRange.fromJson({
       'values': [row]
     });
 
     await sheetsApi.spreadsheets.values
-        .append(vr, _spreadsheetId, range, valueInputOption: 'RAW');
+        .append(vr, _spreadsheetId, range, valueInputOption: 'USER_ENTERED');
   }
 
   Future<void> _updateRow(int rowIndex, List<String> row) async {
@@ -115,25 +140,26 @@ class CategoriaController {
     });
 
     await sheetsApi.spreadsheets.values
-        .update(vr, _spreadsheetId, range, valueInputOption: 'RAW');
+        .update(vr, _spreadsheetId, range, valueInputOption: 'USER_ENTERED');
   }
 
   Future<void> _deleteRow(int rowIndex) async {
     final authClient = await _getAuthClient();
     final sheetsApi = SheetsApi(authClient);
-
+    // Obtener el ID de la hoja usando el nombre
+    final sheetId = await _getSheetIdByName(sheetsApi, _sheetName);
+    if (sheetId == null) {
+      print('No se encontró la hoja con nombre $_sheetName');
+      return;
+    }
     try {
-      Spreadsheet spreadsheet =
-          await sheetsApi.spreadsheets.get(_spreadsheetId);
-      Sheet sheet = spreadsheet.sheets![0];
-
       BatchUpdateSpreadsheetRequest batchUpdateRequest =
           BatchUpdateSpreadsheetRequest.fromJson({
         'requests': [
           {
             'deleteDimension': {
               'range': {
-                'sheetId': sheet.properties!.sheetId!,
+                'sheetId': sheetId,
                 'dimension': 'ROWS',
                 'startIndex': rowIndex,
                 'endIndex': rowIndex + 1
@@ -151,108 +177,105 @@ class CategoriaController {
   }
 
   Future<List<dynamic>> getDataCategories({String? nombre}) async {
-  try {
-    final urls = Providers.provider();
-    String urlString = urls['categoriaListProvider']!;
+    try {
+      final urls = Providers.provider();
+      String urlString = urls['categoriaListProvider']!;
 
-    // Si el nombre es proporcionado, lo agregamos como parámetro de búsqueda
-    if (nombre != null && nombre.isNotEmpty) {
-      urlString += '/buscar?nombre=$nombre';
+      // Si el nombre es proporcionado, lo agregamos como parámetro de búsqueda
+      if (nombre != null && nombre.isNotEmpty) {
+        urlString += '/buscar?nombre=$nombre';
+      }
+
+      final url = Uri.parse(urlString);
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to load categories');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return [];
     }
-
-    final url = Uri.parse(urlString);
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load categories');
-    }
-  } catch (e) {
-    print('Error: $e');
-    return [];
   }
-}
 
   Future<http.Response> crearCategoria(CategoriaModel nuevaCategoria) async {
-    // Obtener la URL del proveedor
     final urls = Providers.provider();
     final urlString = urls['categoriaListProvider']!;
     final url = Uri.parse(urlString);
-
-    // Crear el cuerpo de la solicitud
     final body = jsonEncode(nuevaCategoria.toJson());
+    await formato_Hoja_encabezado();
 
-    // Enviar la solicitud POST
     final response = await http.post(
       url,
       headers: {
-        'Content-Type':
-            'application/json', // Especificar que el contenido es JSON
+        'Content-Type': 'application/json',
       },
       body: body,
     );
 
-    // Manejar la respuesta
     if (response.statusCode == 200 || response.statusCode == 201) {
-      // La categoría se creó con éxito
+      final nuevaCategoriaCreada =
+          CategoriaModel.fromJson(json.decode(response.body));
       print('Categoría creada: ${response.body}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        await _addRow([
-          nuevaCategoria.nombre.toString(),
-          nuevaCategoria.tag.toString(),
-          nuevaCategoria.estado.toString(),
-          nuevaCategoria.foto.toString()
-        ]);
-      }
+      String hyperlinkFormula =
+          '=HYPERLINK("${nuevaCategoriaCreada.foto}", "linkDeImagen")';
+      await _addRow([
+        nuevaCategoriaCreada.id.toString(),
+        nuevaCategoria.nombre.toString(),
+        nuevaCategoria.tag.toString(),
+        nuevaCategoria.estado.toString(),
+        hyperlinkFormula
+      ]);
     } else {
-      // Ocurrió un error
       print(
           'Error al crear categoría: ${response.statusCode} - ${response.body}');
     }
-
-    return response; // Retornar la respuesta
+    return response;
   }
 
   Future<http.Response> editarCategoria(CategoriaModel categoriaEditada) async {
-    // Obtener la URL del proveedor
     final urls = Providers.provider();
     final urlString = urls['categoriaListProvider']!;
-    final url =
-        Uri.parse(urlString); // URL sin ID, ya que se enviará en el cuerpo
+    final url = Uri.parse(urlString);
 
-    // Crear el cuerpo de la solicitud, incluyendo el ID
     final body = jsonEncode(categoriaEditada.toJson());
 
-    // Enviar la solicitud PUT
     final response = await http.put(
       url,
       headers: {
-        'Content-Type':
-            'application/json', // Especificar que el contenido es JSON
+        'Content-Type': 'application/json',
       },
       body: body,
     );
 
-     // Manejar la respuesta
     if (response.statusCode == 200 || response.statusCode == 204) {
-      // La categoría se actualizó con éxito
+      List<String> ids = await _getAllIds();
+      int rowIndex = ids.indexOf(categoriaEditada.id.toString());
       print('Categoría editada: ${response.body}');
 
-      await _updateRow(categoriaEditada.id!, [ 
-        categoriaEditada.nombre ?? '',
-        categoriaEditada.tag ?? '',
-        categoriaEditada.estado ?? '',
-        categoriaEditada.foto ?? ''
-      ]);
+      if (rowIndex != -1) {
+        String hyperlinkFormula =
+            '=HYPERLINK("${categoriaEditada.foto}", "linkDeImagen")';
+        List<String> newRow = [
+          categoriaEditada.id.toString(),
+          categoriaEditada.nombre ?? '',
+          categoriaEditada.tag ?? '',
+          categoriaEditada.estado ?? '',
+          hyperlinkFormula
+        ];
+
+        await _updateRow(rowIndex, newRow);
+      } else {
+        print("ID no encontrado: ${categoriaEditada.id}");
+      }
     } else {
- 
-      print('Error al editar categoría: ${response.statusCode} - ${response.body}');
+      print(
+          'Error al editar categoría: ${response.statusCode} - ${response.body}');
     }
 
-
-    return response; // Retornar la respuesta
+    return response;
   }
 
   Future<http.Response> removeCategoria(int id, String fotoURL) async {
@@ -264,10 +287,9 @@ class CategoriaController {
       url,
       headers: {"Content-Type": "application/json"},
     );
-    // Verifica si la fotoURL es una URL válida de Firebase Storage
+
     if (fotoURL.isNotEmpty &&
         (fotoURL.startsWith('gs://') || fotoURL.startsWith('https://'))) {
-      // Elimina la foto de Firebase Storage
       try {
         await FirebaseStorage.instance.refFromURL(fotoURL).delete();
         print("Imagen eliminada de Firebase Storage");
@@ -280,8 +302,20 @@ class CategoriaController {
     print("Response Body: ${response.body}");
 
     if (response.statusCode == 200 || response.statusCode == 204) {
-      await _deleteRow(id);
+      List<String> ids = await _getAllIds();
+
+      int rowIndex = ids.indexOf(id.toString());
+
+      if (rowIndex != -1) {
+        await _deleteRow(rowIndex);
+      } else {
+        print("ID no encontrado en Google Sheets: $id");
+      }
+    } else {
+      print(
+          'Error al eliminar categoría: ${response.statusCode} - ${response.body}');
     }
+
     return response;
   }
 }
