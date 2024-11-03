@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:front_flutter_api_rest/src/controller/auth/ShareApiTokenController.dart';
@@ -11,6 +12,13 @@ import 'package:http/http.dart' as http;
 
 class LoginRegisterController {
   static var client = http.Client();
+  static final StreamController<Map<String, dynamic>> _userCreatedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+
+  static final Set<int> _emittedUserIds = {};
+
+  static Stream<Map<String, dynamic>> get userCreatedStream =>
+      _userCreatedController.stream;
 
   static Future<bool> login(AuthRequestModel model) async {
     Map<String, String> requestHeaders = {
@@ -19,7 +27,6 @@ class LoginRegisterController {
     var urls = Providers.provider();
     var urlString = urls['loginProvider']!;
     var url = Uri.parse(urlString);
-    //var url = Uri.http(ConfigApi.apiURL, ConfigApi.loginAPI);
 
     var response = await client.post(
       url,
@@ -29,9 +36,7 @@ class LoginRegisterController {
     if (response.statusCode == 200) {
       final authResponse = authResponseJson(response.body);
 
-      // Agrega esta línea para imprimir el token en la consola
       print('Token obtenido en el inicio de sesión: ${authResponse.token}');
-      // Convierte el objeto del usuario en una representación de cadena y luego imprímelo
       final userAsString = authResponse.user != null
           ? authResponse.user!.toJson().toString()
           : "Usuario no disponible";
@@ -52,7 +57,6 @@ class LoginRegisterController {
     var urls = Providers.provider();
     var urlString = urls['registerProvider']!;
     var url = Uri.parse(urlString);
-   // var url = Uri.http(ConfigApi.apiURL, ConfigApi.registerAPI);
 
     try {
       var response = await client.post(
@@ -61,11 +65,31 @@ class LoginRegisterController {
         body: jsonEncode(model.toJson()),
       );
 
-      return registerResponseModel(response.body);
+      var registerResponse = registerResponseModel(response.body);
+
+      if (registerResponse.user == null) {
+        print('No hay items registrados. ${registerResponse.toString()}');
+      } else {
+        print('Items Registrados: ${registerResponse.toString()}');
+        int userId = registerResponse.user!.id ?? -1;
+        if (!_emittedUserIds.contains(userId)) {
+          final user = registerResponse.user!.toJson();
+          _userCreatedController.add(user);
+          _emittedUserIds.add(userId);
+          print("Evento de creación de usuario emitido: $user");
+        } else {
+          print("El usuario ya ha sido emitido, no se vuelve a emitir.");
+        }
+      }
+
+      return registerResponse;
     } catch (error) {
-      // En caso de error, lanzar una excepción con el mensaje de error.
       throw Exception("Error en el registro: $error");
     }
+  }
+
+  static void dispose() {
+    _userCreatedController.close();
   }
 
   static Future<List<String>> getUserProfile() async {
@@ -78,7 +102,6 @@ class LoginRegisterController {
     var urlString = urls['userListProvider']!;
     var url = Uri.parse(urlString);
 
-
     var response = await client.get(
       url,
       headers: requestHeaders,
@@ -87,8 +110,7 @@ class LoginRegisterController {
     if (response.statusCode == 200) {
       final List<dynamic> jsonData = json.decode(response.body);
       final List<String> emails = jsonData.map((dynamic item) {
-        return item["email"]
-            .toString();
+        return item["email"].toString();
       }).toList();
 
       return emails;
